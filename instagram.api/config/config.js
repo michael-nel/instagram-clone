@@ -1,6 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const mongodb = require("mongodb");
+const consign = require('consign');
 const app = express();
 app.use(
   bodyParser.urlencoded({
@@ -8,6 +8,8 @@ app.use(
   })
 );
 app.use(bodyParser.json());
-let port = 8080;
-app.listen(port);
-console.log("Server On ->" + port);
+
+consign()
+  .then('./routes')
+  .into(app);
+module.exports = app;
