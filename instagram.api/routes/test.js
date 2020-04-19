@@ -30,13 +30,29 @@ module.exports = (app) => {
   });
 
   app.post("/api", (req, res) => {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    const data = req.body;
-    app.db.open((err, mongoClient) => {
-      mongoClient.collection("posts", function (err, collection) {
-        collection.insert(data, function (err, records) {
-          err ? res.json(err) : res.json(records);
-          mongoClient.close();
+    let date = new Date();
+    let time_stamp = date.getTime();
+    let url_image = time_stamp + "_" + req.files.file.originalFilename;
+    const path_origin = req.files.file.path;
+    const path_to = "./spool/" + url_image;
+    app.fs.rename(path_origin, path_to, function (err) {
+      if (err) {
+        res.status(500).json({
+          error: err,
+        });
+        return;
+      }
+      var data = {
+        url_image: url_image,
+        title: req.body.title,
+      };
+
+      app.db.open((err, mongoClient) => {
+        mongoClient.collection("posts", function (err, collection) {
+          collection.insert(data, function (err, records) {
+            err ? res.json(err) : res.json(records);
+            mongoClient.close();
+          });
         });
       });
     });
@@ -45,13 +61,16 @@ module.exports = (app) => {
   app.put("/api/:id", (req, res) => {
     app.db.open((err, mongoClient) => {
       mongoClient.collection("posts", function (err, collection) {
-        collection.update({
-            _id: app.objectId(req.params.id)
-          }, {
+        collection.update(
+          {
+            _id: app.objectId(req.params.id),
+          },
+          {
             $set: {
-              title: req.body.title
-            }
-          }, {},
+              title: req.body.title,
+            },
+          },
+          {},
           function (err, records) {
             err ? res.json(err) : res.json(records);
           }
@@ -64,14 +83,14 @@ module.exports = (app) => {
   app.delete("/api/:id", (req, res) => {
     app.db.open((err, mongoClient) => {
       mongoClient.collection("posts", function (err, collection) {
-        collection.remove({
-          _id: app.objectId(req.params.id)
-        }, function (
-          err,
-          records
-        ) {
-          err ? res.json(err) : res.json(records);
-        });
+        collection.remove(
+          {
+            _id: app.objectId(req.params.id),
+          },
+          function (err, records) {
+            err ? res.json(err) : res.json(records);
+          }
+        );
         mongoClient.close();
       });
     });
