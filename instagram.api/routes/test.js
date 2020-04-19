@@ -29,6 +29,20 @@ module.exports = (app) => {
     });
   });
 
+  app.get("/spool/:image", (req, res) => {
+    var img = req.params.image;
+
+    app.fs.readFile("./spool/" + img, function (err, content) {
+      if (err) {
+        res.status(400).json(err);
+        return;
+      }
+
+      res.writeHead(200, { "content-type": "image/jpg" });
+      res.end(content);
+    });
+  });
+
   app.post("/api", (req, res) => {
     let date = new Date();
     let time_stamp = date.getTime();
