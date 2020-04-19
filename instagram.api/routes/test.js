@@ -100,10 +100,10 @@ module.exports = (app) => {
   app.delete("/api/:id", (req, res) => {
     app.db.open((err, mongoClient) => {
       mongoClient.collection("posts", function (err, collection) {
-        collection.remove(
-          {
-            _id: app.objectId(req.params.id),
-          },
+        collection.update(
+          {},
+          { $pull: { comments: { id_comment: app.objectId(req.params.id) } } },
+          { multi: true },
           function (err, records) {
             err ? res.json(err) : res.json(records);
           }

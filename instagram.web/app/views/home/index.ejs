@@ -38,12 +38,23 @@
 												item.comments.forEach(item2 =>{
 												$('#comments_' + item._id).append(
 													'<div class="txt_comment">' +
+														'<button type="button" class="btn btn-default btn_remove_post" value="'+item2.id_comment+'" >X</button>' +
 														item2.comment + '</div>'
 												)
 											})
 										}
 						 }
 						 );
+
+						 $('.btn_remove_post').click(function(){
+							
+							var xhr = new XMLHttpRequest();
+							xhr.open('DELETE','http://localhost:8080/api/' + this.value)
+							xhr.onload = function(){
+								window.location.href="/home";
+							}
+							xhr.send();
+						 });
 
 						 $('.btn_post').click(function(){
 							var comment = $('#post_' + this.value).val();
@@ -52,7 +63,7 @@
 							xhr.open('PUT','http://localhost:8080/api/' + this.value)
 							xhr.setRequestHeader('Content-Type','application/json');
 							xhr.onload = function(){
-								load_posts();
+								window.location.href="/home";
 							}
 							xhr.send(JSON.stringify({comment: comment}));
 						 })
