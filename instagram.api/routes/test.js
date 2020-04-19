@@ -30,6 +30,7 @@ module.exports = (app) => {
   });
 
   app.post("/api", (req, res) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
     const data = req.body;
     app.db.open((err, mongoClient) => {
       mongoClient.collection("posts", function (err, collection) {
@@ -44,10 +45,13 @@ module.exports = (app) => {
   app.put("/api/:id", (req, res) => {
     app.db.open((err, mongoClient) => {
       mongoClient.collection("posts", function (err, collection) {
-        collection.update(
-          { _id: app.objectId(req.params.id) },
-          { $set: { title: req.body.title } },
-          {},
+        collection.update({
+            _id: app.objectId(req.params.id)
+          }, {
+            $set: {
+              title: req.body.title
+            }
+          }, {},
           function (err, records) {
             err ? res.json(err) : res.json(records);
           }
@@ -60,7 +64,9 @@ module.exports = (app) => {
   app.delete("/api/:id", (req, res) => {
     app.db.open((err, mongoClient) => {
       mongoClient.collection("posts", function (err, collection) {
-        collection.remove({ _id: app.objectId(req.params.id) }, function (
+        collection.remove({
+          _id: app.objectId(req.params.id)
+        }, function (
           err,
           records
         ) {
