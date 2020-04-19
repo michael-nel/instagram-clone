@@ -80,8 +80,11 @@ module.exports = (app) => {
             _id: app.objectId(req.params.id),
           },
           {
-            $set: {
-              title: req.body.title,
+            $push: {
+              comments: {
+                id_comment: new app.objectId(),
+                comment: req.body.comment,
+              },
             },
           },
           {},

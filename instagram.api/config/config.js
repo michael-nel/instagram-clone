@@ -15,6 +15,13 @@ app.use(
 app.use(bodyParser.json());
 app.use(cors({ origin: "http://localhost" }));
 app.use(multiparty());
+
+//Solving problem Request Options
+app.use(function (req, res, next) {
+  res.setHeader("Access-Control-Allow-Headers", "content-type");
+  next();
+});
+
 app.db = db;
 app.objectId = objectId;
 app.fs = fs;

@@ -21,16 +21,41 @@
 				xhr.onload = function(){
 					 if(xhr.status == 200){
 						 var data = $.parseJSON(xhr.responseText);
-						 console.log(data);
 						 data.forEach(item =>{
 							$('#container_timeline').append(
 								'<div class="publish">'+
 									'<span class="title">'+ item.title +
 										'</span>'+
 										'<img src="http://localhost:8080/spool/' + item.url_image +'" />' +
+										'<div class="comments" id="comments_' + item._id + '"></div>' +
+										'<div class="comment">' +
+													'<input tyle="text" class="form-control input_comment" id="post_'+ item._id +'" placeholder="Comment">' +
+													'<button class="btn btn-success btn_post" value="' + item._id +'" type="button">Add</button>' +
+											'</div>'+
 										'</div>'
-							);
-						 });
+										);
+										if (typeof item.comments != 'undefined'){
+												item.comments.forEach(item2 =>{
+												$('#comments_' + item._id).append(
+													'<div class="txt_comment">' +
+														item2.comment + '</div>'
+												)
+											})
+										}
+						 }
+						 );
+
+						 $('.btn_post').click(function(){
+							var comment = $('#post_' + this.value).val();
+							
+							var xhr = new XMLHttpRequest();
+							xhr.open('PUT','http://localhost:8080/api/' + this.value)
+							xhr.setRequestHeader('Content-Type','application/json');
+							xhr.onload = function(){
+								load_posts();
+							}
+							xhr.send(JSON.stringify({comment: comment}));
+						 })
 					 }
 				}
 				xhr.send();
